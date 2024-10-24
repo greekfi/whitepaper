@@ -50,25 +50,25 @@
           <mxGeometry x="410" y="610" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="bA5UnjsFuITjD8SUiumk-20" value="&lt;font color=&quot;#000000&quot;&gt;Option&lt;/font&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;wETH&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;2025-01-01&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;3000&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" vertex="1" parent="1">
-          <mxGeometry x="260" y="820" width="80" height="80" as="geometry" />
+          <mxGeometry x="320" y="820" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="bA5UnjsFuITjD8SUiumk-22" value="&lt;font color=&quot;#000000&quot;&gt;USDC&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#20E267;fontColor=#ffffff;strokeColor=#006EAF;" vertex="1" parent="1">
-          <mxGeometry x="260" y="960" width="80" height="80" as="geometry" />
+          <mxGeometry x="320" y="960" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="bA5UnjsFuITjD8SUiumk-23" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="390" y="940" as="sourcePoint" />
-            <mxPoint x="460" y="940" as="targetPoint" />
+            <mxPoint x="450" y="940" as="sourcePoint" />
+            <mxPoint x="520" y="940" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="bA5UnjsFuITjD8SUiumk-24" value="&lt;font color=&quot;#000000&quot;&gt;Exercise&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" vertex="1" parent="1">
-          <mxGeometry x="320" y="880" width="70" height="30" as="geometry" />
+          <mxGeometry x="380" y="880" width="70" height="30" as="geometry" />
         </mxCell>
         <mxCell id="bA5UnjsFuITjD8SUiumk-25" value="" style="shape=cross;whiteSpace=wrap;html=1;fillColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="280" y="910" width="40" height="40" as="geometry" />
+          <mxGeometry x="340" y="910" width="40" height="40" as="geometry" />
         </mxCell>
         <mxCell id="bA5UnjsFuITjD8SUiumk-27" value="&lt;font color=&quot;#000000&quot;&gt;wETH&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#F7F76E;fontColor=#ffffff;strokeColor=#FFFA61;" vertex="1" parent="1">
-          <mxGeometry x="490" y="900" width="80" height="80" as="geometry" />
+          <mxGeometry x="550" y="900" width="80" height="80" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
