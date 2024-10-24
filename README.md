@@ -55,3 +55,7 @@ From Alice's perspective, there are two possible outcomes:
     2. Alice can sell the COL on the market.
 
 The OSC allows anyone to bring any ERC20 token as collateral and write options on it. This is a powerful feature that allows for a wide range of options to be written on any ERC20 asset.
+
+
+![Option Swap Contract Diagram](diagram1.png)
+
