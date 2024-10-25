@@ -59,3 +59,27 @@ The OSC allows anyone to bring any ERC20 token as collateral and write options o
 
 ![Option Swap Contract Diagram](diagram1.png)
 
+#### 1.5 Put Options On Chain
+This process is similar to the call option system, the main difference is that the Put Option Writer needs to collateralize the purchase currency (CURNCY) instead of the underlying asset (ASSET). This currency is used to purchase the underlying asset at the strike price from the Put Option Buyer.
+
+Let's dive into an example. Alice is willing to buy 2 wETH at the price of 2000 USDC per wETH. She collateralizes 4000 USDC into the OSC and gets 2 Put Option Tokens (OP) and 2 Collateral Tokens (COL) that represent her position and the collateral she put up.
+
+Alice lists the OP for sale on a market (Uniswap etc.) and Bob buys the option from Alice. Bob has the choice to either hold the OP or sell it on the market if the price moves down in his favor.
+
+From Bob's perspective, there are three possible outcomes:
+
+1. Bob allows the OP to expire.
+2. Bob sells the OP on the market before expiration.
+3. Before expiration, Bob interacts with the OP smart contract to exercise the option by depositing wETH and receiving USDC.
+
+<!-- ![Put Option Swap Contract Diagram](diagram2.png) -->
+
+#### 1.6 Symmetry in Calls and Puts
+Both of the on-chain Call and Put strategies simply involve collateralizing an asset and allowing an exercise to swap a currency asset for the collateral. In the Calls example, wETH is used as collateral and the currency is USDC. In the Puts example, USDC is used as collateral and the currency is wETH. The main difference in the language of puts is to state that the strike price is inverted (.0005 ETH per USDC instead of 2000 USDC per ETH). To reduce any confusion, a simple flag can be added to the option contract to indicate if it is a call or a put to display the appropriate strike price in traditional terms.
+
+<!-- ### 2. Technical
+
+#### 2.1 Call Options
+
+##### 2.1.1 Option Swap Contract
+The option swap contract is the gateway to the options system.  -->
