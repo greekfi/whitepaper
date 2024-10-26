@@ -115,7 +115,7 @@ In addition to the ERC20 functions, the OP contract includes the following funct
 
 | Function | Description |
 |----------|-------------|
-| exercise(uint256 amount) | Allows the token holder to exercise the option for a specified amount |
+| exercise(uint256 amount) | Allows the token holder to exercise the option for a specified amount. Burns the OP and transfers the exercise currency to the COL contract and the underlying asset to the option owner. Calls the COL contract to transer both of the assets.|
 | redeemCollateral(uint256 amount) | Allows the token holder to redeem their collateral before expiration iff the holder also has the COL token |
 | The following are view functions that are the same for COL and OP|
 | isExpired() | Checks if the option has expired |
@@ -124,6 +124,7 @@ In addition to the ERC20 functions, the OP contract includes the following funct
 | optionAddress() | Returns the address of the connected option contract |
 | underlyingAddress() | Returns the address of the underlying asset token |
 | considerationAddress() | Returns the address of the consideration asset token (typically USDC) |
+| exercisedBalance() | Returns the balance of the collateral that has been exercised |
 
 These functions provide the core functionality for the OP token, including standard ERC20 operations and option-specific actions like exercising and redeeming collateral.
 
@@ -136,8 +137,8 @@ In addition to the ERC20 functions, the COL contract includes the following func
 | Function | Description |
 |----------|-------------|
 | redeemCollateral() | Allows the token holder to redeem their collateral after expiration |
-| exercisedBalance() | Returns the balance of the collateral that has been exercised |
-| setOptionAddress(address option) | Sets the address of the connected option contract |
+| setOptionAddress(address option) | Not user-facing, OP contract only. Sets the address of the connected option contract |
+| exercise(uint256 amount, address optionOwner) | Not user-facing, OP contract only. Allows the option contract to exercise the option for a specified amount. Transfers the exercise currency to the COL contract, and the underlying asset to the option owner. |
 | The following are view functions that are the same for COL and OP|
 | isExpired() | Checks if the option has expired |
 | optionType() | Returns the type of the option (call or put) |
@@ -145,4 +146,5 @@ In addition to the ERC20 functions, the COL contract includes the following func
 | optionAddress() | Returns the address of the connected option contract |
 | underlyingAddress() | Returns the address of the underlying asset token |
 | considerationAddress() | Returns the address of the consideration asset token (typically USDC) |
+| exercisedBalance() | Returns the balance of the collateral that has been exercised |
 
