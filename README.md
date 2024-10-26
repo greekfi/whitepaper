@@ -1,4 +1,4 @@
-# Fully Collateralized DeFi Options
+# Fully Collateralized DeFi Options [WIP]
 ## Technical White Paper v1.0
 
 ### Abstract
@@ -77,9 +77,72 @@ From Bob's perspective, there are three possible outcomes:
 #### 1.6 Symmetry in Calls and Puts
 Both of the on-chain Call and Put strategies simply involve collateralizing an asset and allowing an exercise to swap a currency asset for the collateral. In the Calls example, wETH is used as collateral and the currency is USDC. In the Puts example, USDC is used as collateral and the currency is wETH. The main difference in the language of puts is to state that the strike price is inverted (.0005 ETH per USDC instead of 2000 USDC per ETH). To reduce any confusion, a simple flag can be added to the option contract to indicate if it is a call or a put to display the appropriate strike price in traditional terms.
 
-<!-- ### 2. Technical
+### 2. Technical
 
-#### 2.1 Call Options
+#### 2.1 Option Swap Contract
+The option swap contract (OSC) is the gateway to the options system. 
+It provides the interface to users to collateralize assets in turn creating option tokens and collateral tokens.
+The OSC provides the following key functions:
 
-##### 2.1.1 Option Swap Contract
-The option swap contract is the gateway to the options system.  -->
+| Function | Description |
+|----------|-------------|
+| Mint New Option and Collateral Tokens | Allows users to create new Options Tokens (OP) and Collateral Tokens (COL) by specifying parameters such as strike price, expiration date, and underlying asset, and exercise currency. This generates a new pair of Smart Contracts for the respective quadruple (STRIKE, EXP, ASSET, CURNCY). |
+| Collateralize Assets | Enables users to deposit assets as collateral which converts into the new pair ofOP and COL tokens at a rate of 1-1. |
+| Redeem Collateral | Permits users to withdraw their collateral after option expiration or if they buy back and burn their option tokens. |
+
+These functions form the core of the OSC's functionality, enabling users to interact with the options system efficiently and securely.
+
+#### 2.1a Standard ERC20 Functions (for Convenience):
+
+| Function | Description |
+|----------|-------------|
+| transfer(address to, uint256 amount) | Transfers a specified amount of tokens to the given address |
+| transferFrom(address from, address to, uint256 amount) | Transfers tokens from one address to another, given approval |
+| approve(address spender, uint256 amount) | Approves a spender to spend a certain amount of tokens |
+| balanceOf(address account) | Returns the token balance of a given address |
+| totalSupply() | Returns the total supply of tokens |
+| allowance(address owner, address spender) | Returns the remaining allowance for a spender |
+| name() | Returns the name of the token |
+| symbol() | Returns the symbol of the token |
+| decimals() | Returns the number of decimals for the token |
+
+
+#### 2.2 Option Smart Contracts (OP)
+
+The Option Smart Contract (OP) represents the ERC20 Token for the Option. It is a tradable token that represents the option contract. The OP contract allows the owner to exercise the option at any time before expiration. The buyer can exercise the option by depositing the exercise currency (CURNCY) and receiving the underlying asset (ASSET).
+
+In addition to the ERC20 functions, the OP contract includes the following functions:
+
+| Function | Description |
+|----------|-------------|
+| exercise(uint256 amount) | Allows the token holder to exercise the option for a specified amount |
+| redeemCollateral(uint256 amount) | Allows the token holder to redeem their collateral before expiration iff the holder also has the COL token |
+| The following are view functions that are the same for COL and OP|
+| isExpired() | Checks if the option has expired |
+| optionType() | Returns the type of the option (call or put) |
+| collateralAddress() | Returns the address of the collateral token contract |
+| optionAddress() | Returns the address of the connected option contract |
+| underlyingAddress() | Returns the address of the underlying asset token |
+| considerationAddress() | Returns the address of the consideration asset token (typically USDC) |
+
+These functions provide the core functionality for the OP token, including standard ERC20 operations and option-specific actions like exercising and redeeming collateral.
+
+#### 2.3 Collateral Smart Contracts (COL)
+
+The Collateral Smart Contract (COL) represents the ERC20 Token for the Collateral. It is a tradable token that represents the collateral deposited by the user. The COL contract allows the owner to redeem the collateral at any time after the option expires.
+
+In addition to the ERC20 functions, the COL contract includes the following functions:
+
+| Function | Description |
+|----------|-------------|
+| redeemCollateral() | Allows the token holder to redeem their collateral after expiration |
+| exercisedBalance() | Returns the balance of the collateral that has been exercised |
+| setOptionAddress(address option) | Sets the address of the connected option contract |
+| The following are view functions that are the same for COL and OP|
+| isExpired() | Checks if the option has expired |
+| optionType() | Returns the type of the option (call or put) |
+| collateralAddress() | Returns the address of the collateral token contract |
+| optionAddress() | Returns the address of the connected option contract |
+| underlyingAddress() | Returns the address of the underlying asset token |
+| considerationAddress() | Returns the address of the consideration asset token (typically USDC) |
+
