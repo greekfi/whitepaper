@@ -136,7 +136,7 @@ In addition to the ERC20 functions, the COL contract includes the following func
 
 | Function | Description |
 |----------|-------------|
-| redeemCollateral() | Allows the token holder to redeem their collateral after expiration |
+| redeemCollateral() | Allows the COL token holder to redeem their collateral after expiration. Burns the COL and transfers the collateral to the user. IF the underlying asset cas been exercised, the consideration asset is transferred to the COL holder. |
 | setOptionAddress(address option) | Not user-facing, OP contract only. Sets the address of the connected option contract |
 | exercise(uint256 amount, address optionOwner) | Not user-facing, OP contract only. Allows the option contract to exercise the option for a specified amount. Transfers the exercise currency to the COL contract, and the underlying asset to the option owner. |
 | The following are view functions that are the same for COL and OP|
