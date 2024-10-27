@@ -115,6 +115,7 @@ In addition to the ERC20 functions, the OP contract includes the following funct
 
 | Function | Description |
 |----------|-------------|
+| constructor(address _underlyingAddress, address _considerationAddress, address _collateralAddress, uint256 _strike, uint256 _expiration, bool isPut) | Not user-facing. Sets the addresses of the connected collateral, underlying, and consideration asset contracts along with the strike price, expiration date, and option type. |
 | exercise(uint256 amount) | Allows the token holder to exercise the option for a specified amount. Burns the OP and transfers the exercise currency to the COL contract and the underlying asset to the option owner. Calls the COL contract to transer both of the assets.|
 | redeemCollateral(uint256 amount) | Allows the token holder to redeem their collateral before expiration iff the holder also has the COL token |
 | The following are view functions that are the same for COL and OP|
@@ -136,6 +137,7 @@ In addition to the ERC20 functions, the COL contract includes the following func
 
 | Function | Description |
 |----------|-------------|
+| constructor(address _underlyingAddress, address _considerationAddress, uint256 _strike, uint256 _expiration, bool isPut) | Not user-facing. Sets the addresses of the underlying, and consideration asset contracts along with the strike price, expiration date, and option type. |
 | redeemCollateral(uint256 amount) | Allows the COL token holder to redeem their collateral after expiration. Burns the COL and transfers the collateral to the user. IF the underlying asset cas been exercised, the consideration asset is transferred to the COL holder. |
 | setOptionAddress(address option) | Not user-facing, OP contract only. Sets the address of the connected option contract |
 | exercise(uint256 amount, address optionOwner) | Not user-facing, OP contract only. Allows the option contract to exercise the option for a specified amount. Transfers the exercise currency to the COL contract, and the underlying asset to the option owner. |
