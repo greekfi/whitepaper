@@ -19,12 +19,12 @@ Most options experts assume margin accounts and clearing counterparty to handle 
 
 #### 1.3 Call Options
 
-A call option is a contract that gives the buyer the right to buy a certain amount of an underlying asset (ASSET) prior to an expiration date (EXP) at a specified price (STRIKE) of a purchasing currency (CURNCY). The seller of the call option is obligated to sell the underlying asset if the buyer decides to exercise the option priot to the expiration date. 
+A call option is a contract that gives the buyer the right to buy a certain amount of an underlying asset (ASSET) prior to an expiration date (EXP) at a specified price (STRIKE) of a purchasing currency (CONSD). The seller of the call option is obligated to sell the underlying asset if the buyer decides to exercise the option priot to the expiration date. 
 
 | Variable | Description |
 |----------|-------------|
 | ASSET    | The underlying asset that the option is written on. |
-| CURNCY   | The currency that the option is priced in. |
+| CONSD   | The currency that the option is priced in. |
 | STRIKE   | The price of the underlying asset that the option gives the buyer the right to buy. |
 | EXP      | The date the option expires. |
 
@@ -60,7 +60,7 @@ The OSC allows anyone to bring any ERC20 token as collateral and write options o
 ![Option Swap Contract Diagram](diagram1.png)
 
 #### 1.5 Put Options On Chain
-This process is similar to the call option system, the main difference is that the Put Option Writer needs to collateralize the purchase currency (CURNCY) instead of the underlying asset (ASSET). This currency is used to purchase the underlying asset at the strike price from the Put Option Buyer.
+This process is similar to the call option system, the main difference is that the Put Option Writer needs to collateralize the purchase currency (CONSD) instead of the underlying asset (ASSET). This currency is used to purchase the underlying asset at the strike price from the Put Option Buyer.
 
 Let's dive into an example. Alice is willing to buy 2 wETH at the price of 2000 USDC per wETH. She collateralizes 4000 USDC into the OSC and gets 2 Put Option Tokens (OP) and 2 Collateral Tokens (COL) that represent her position and the collateral she put up.
 
@@ -86,11 +86,10 @@ The OSC provides the following key functions:
 
 | Function | Description |
 |----------|-------------|
-| Mint New Option and Collateral Tokens | Allows users to create new Options Tokens (OP) and Collateral Tokens (COL) by specifying parameters such as strike price, expiration date, and underlying asset, and exercise currency. This generates a new pair of Smart Contracts for the respective quadruple (STRIKE, EXP, ASSET, CURNCY). |
-| Collateralize Assets | Enables users to deposit assets as collateral which converts into the new pair ofOP and COL tokens at a rate of 1-1. |
-| Redeem Collateral | Permits users to withdraw their collateral after option expiration or if they buy back and burn their option tokens. |
+| Mint New Option and Collateral Tokens | Allows users to create new Options Tokens (OP) and Collateral Tokens (COL) by specifying parameters such as strike price, expiration date, and underlying asset, and exercise currency. This generates a new pair of Smart Contracts for the respective quadruple (STRIKE, EXP, ASSET, CONSD). |
+| collaterize or mint(address asset, uint256 amount) | Allows users to collateralize an asset and receive OP and COL tokens in return. |
 
-These functions form the core of the OSC's functionality, enabling users to interact with the options system efficiently and securely.
+Once these contracts are created, the OSC does not need to be involved in the option lifecycle. The OP and COL contracts are self-contained and can be traded and exercised on secondary markets. The OSC is simply a factory that creates the contracts. The mint function is simply a convenience function to mint the tokens and collateralize the asset in one step if the OP/COL pair doesn't exist.
 
 #### 2.1a Standard ERC20 Functions (for Convenience):
 
@@ -116,6 +115,7 @@ In addition to the ERC20 functions, the OP contract includes the following funct
 | Function | Description |
 |----------|-------------|
 | constructor(address _underlyingAddress, address _considerationAddress, address _collateralAddress, uint256 _strike, uint256 _expiration, bool isPut) | Not user-facing. Sets the addresses of the connected collateral, underlying, and consideration asset contracts along with the strike price, expiration date, and option type. |
+| collateralize(uint256 amount) | Allows the token holder to collateralize and deposit their underlying asset. In return the user is transfered OP and COL tokens at a 1-1 ratio (minus fees). |
 | exercise(uint256 amount) | Allows the token holder to exercise the option for a specified amount. Burns the OP and transfers the exercise currency to the COL contract and the underlying asset to the option owner. Calls the COL contract to transer both of the assets.|
 | redeemCollateral(uint256 amount) | Allows the token holder to redeem their collateral before expiration iff the holder also has the COL token |
 | The following are view functions that are the same for COL and OP|
