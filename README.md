@@ -110,6 +110,8 @@ Once these contracts are created, the OSC does not need to be involved in the op
 
 The Option Smart Contract (OP) represents the ERC20 Token for the Option. It is a tradable token that represents the option contract. The OP contract allows the owner to exercise the option at any time before expiration. The buyer can exercise the option by depositing the exercise currency (CURNCY) and receiving the underlying asset (ASSET).
 
+The OP contract owns the COL contract, allowing proper interaction with the collateral, mainly through exercise and redemption/burning (if the user owns the COL token). 
+
 In addition to the ERC20 functions, the OP contract includes the following functions:
 
 | Function | Description |
