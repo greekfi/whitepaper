@@ -35,15 +35,15 @@ Traditional Example: Alice owns 2 ETH and wants to write options on her position
 #### 1.4  Call Options on Chain
 Example: Alice owns 2 wETH and wants to write options on her position. She decides to write a call option with a strike price of 3000 USD and an expiration date of 30 days from now. 
 
-Alice deposits 2 wETH into the Option Swap Contract (OSC) as collateral. The OSC mints and transfers 2 Call Option Tokens (OP) and 2 Collateral Tokens (COL) to Alice that represents her position. 
+Alice deposits 2 wETH into the Option Swap Contract (OSC) as collateral. The OSC mints and transfers 2 Long Call Option Tokens (LONG) and 2 Short Call Option Tokens (SHORT) to Alice that represents her position. 
 
-Alice lists the OP for sale on a market (Uniswap etc.) and Bob buys the option from Alice. Bob has the choice to either hold the OP or sell it on the market if the price moves in his favor. 
+Alice lists the LONG for sale on a market (Uniswap etc.) and Bob buys the option from Alice. Bob has the choice to either hold the LONG or sell it on the market if the price moves in his favor. 
 
 From Bob's perspective, there are three possible outcomes:
 
-1. Bob allows the OP to expire.
-2. Bob sells the OP on the market before expiration.
-3. Before expiration, Bob interacts with the OP smart contract to exercise the option by depositing USDC and receiving wETH.
+1. Bob allows the LONG to expire.
+2. Bob sells the LONG on the market before expiration.
+3. Before expiration, Bob interacts with the LONG smart contract to exercise the option by depositing USDC and receiving wETH.
 
 From Alice's perspective, there are two possible outcomes:
 
@@ -51,8 +51,8 @@ From Alice's perspective, there are two possible outcomes:
     1. Alice can claim the underlying asset (wETH) from the OSC, or if all the collateral has been exercised...
     2. Alice can claim the purchase currency (USDC) from OSC.
 2. Before expiration, 
-    1. Alice can buy back the OP from the market and withdraw her collateral by burning the OP and the COLs
-    2. Alice can sell the COL on the market.
+    1. Alice can buy back the LONG from the market and withdraw her collateral through redemption by holding the LONG and the SHORTs
+    2. Alice can sell the LONG on the market.
 
 The OSC allows anyone to bring any ERC20 token as collateral and write options on it. This is a powerful feature that allows for a wide range of options to be written on any ERC20 asset.
 
@@ -62,20 +62,22 @@ The OSC allows anyone to bring any ERC20 token as collateral and write options o
 #### 1.5 Put Options On Chain
 This process is similar to the call option system, the main difference is that the Put Option Writer needs to collateralize the purchase currency (CONSD) instead of the underlying asset (ASSET). This currency is used to purchase the underlying asset at the strike price from the Put Option Buyer.
 
-Let's dive into an example. Alice is willing to buy 2 wETH at the price of 2000 USDC per wETH. She collateralizes 4000 USDC into the OSC and gets 2 Put Option Tokens (OP) and 2 Collateral Tokens (COL) that represent her position and the collateral she put up.
+Let's dive into an example. Alice is willing to buy 2 wETH at the price of 2000 USDC per wETH. She collateralizes 4000 USDC into the OSC and gets 2 Long Put Option Tokens (LONG) and 2 Short Put Option Tokens (SHORT) that represent her position and the collateral she put up.
 
-Alice lists the OP for sale on a market (Uniswap etc.) and Bob buys the option from Alice. Bob has the choice to either hold the OP or sell it on the market if the price moves down in his favor.
+Alice lists the LONG for sale on a market (Uniswap etc.) and Bob buys the option from Alice. Bob has the choice to either hold the LONG or sell it on the market if the price moves down in his favor.
 
 From Bob's perspective, there are three possible outcomes:
 
-1. Bob allows the OP to expire.
-2. Bob sells the OP on the market before expiration.
-3. Before expiration, Bob interacts with the OP smart contract to exercise the option by depositing wETH and receiving USDC.
+1. Bob allows the LONG to expire.
+2. Bob sells the LONG on the market before expiration.
+3. Before expiration, Bob interacts with the LONG smart contract to exercise the option by depositing wETH and receiving USDC.
 
 <!-- ![Put Option Swap Contract Diagram](diagram2.png) -->
 
 #### 1.6 Symmetry in Calls and Puts
-Both of the on-chain Call and Put strategies simply involve collateralizing an asset and allowing an exercise to swap a currency asset for the collateral. In the Calls example, wETH is used as collateral and the currency is USDC. In the Puts example, USDC is used as collateral and the currency is wETH. The main difference in the language of puts is to state that the strike price is inverted (.0005 ETH per USDC instead of 2000 USDC per ETH). To reduce any confusion, a simple flag can be added to the option contract to indicate if it is a call or a put to display the appropriate strike price in traditional terms.
+Both of the on-chain Call and Put strategies simply involve two steps: 1. collateralizing an asset and 2. exercising to swap a currency consideration for the collateral. In the Calls example, wETH is used as collateral and the currency is USDC.  In the Puts example, USDC is used as collateral and the currency is wET. 
+
+Because the collateral and consideration are swapped, mathematically, the strike price is inverted (i.e. 2000 USDC per ETH instead of 0.0005 ETH per USDC). Since they are nearly symmetric, a simple flag is added to the option contract to indicate if it is a call or a put to display the appropriate strike price in traditional terms.
 
 ### 2. Technical
 
@@ -86,7 +88,7 @@ The OSC provides the following key functions:
 
 | Function | Description |
 |----------|-------------|
-| Mint New Option and Collateral Tokens | Allows users to create new Options Tokens (OP) and Collateral Tokens (COL) by specifying parameters such as strike price, expiration date, and underlying asset, and exercise currency. This generates a new pair of Smart Contracts for the respective quadruple (STRIKE, EXP, ASSET, CONSD). |
+| Mint New Option and Collateral Tokens | Allows users to create new Options Tokens (OP) and Collateral Tokens (COL) by specifying parameters such as strike price, expiration date, and underlying asset, and exercise currency. This generates a new pair of Smart Contracts for the respective quintuple (STRIKE, EXP, ASSET, CONSD, isPut). |
 | collaterize or mint(address asset, uint256 amount) | Allows users to collateralize an asset and receive OP and COL tokens in return. |
 
 Once these contracts are created, the OSC does not need to be involved in the option lifecycle. The OP and COL contracts are self-contained and can be traded and exercised on secondary markets. The OSC is simply a factory that creates the contracts. The mint function is simply a convenience function to mint the tokens and collateralize the asset in one step if the OP/COL pair doesn't exist.
@@ -106,32 +108,28 @@ Once these contracts are created, the OSC does not need to be involved in the op
 | decimals() | Returns the number of decimals for the token |
 
 
-#### 2.2 Option Smart Contracts (OP)
+#### 2.2 Long Option Smart Contracts (LONG)
 
-The Option Smart Contract (OP) represents the ERC20 Token for the Option. It is a tradable token that represents the option contract. The OP contract allows the owner to exercise the option at any time before expiration. The buyer can exercise the option by depositing the exercise currency (CURNCY) and receiving the underlying asset (ASSET).
+The Long Option Smart Contract (LONG) represents the ERC20 Token representing the Long Option. It is a tradable token that represents the option contract. The LONG contract allows the owner to exercise the option at any time before expiration. The buyer can exercise the option by depositing the exercise currency (CONSD) and receiving the underlying asset (ASSET).
 
-The OP contract owns the COL contract, allowing proper interaction with the collateral, mainly through exercise and redemption/burning (if the user owns the COL token). 
+The LONG contract owns the SHORT contract, allowing proper interaction with the collateral, mainly through exercise along with redemption/burning if the user owns the SHORT token. 
 
-In addition to the ERC20 functions, the OP contract includes the following functions:
+In addition to the ERC20 functions, the LONG contract includes the following functions:
 
 | Function | Description |
 |----------|-------------|
-| constructor(address _underlyingAddress, address _considerationAddress, address _collateralAddress, uint256 _strike, uint256 _expiration, bool isPut) | Not user-facing. Sets the addresses of the connected collateral, underlying, and consideration asset contracts along with the strike price, expiration date, and option type. |
-| collateralize(uint256 amount) | Allows the token holder to collateralize and deposit their underlying asset. In return the user is transfered OP and COL tokens at a 1-1 ratio (minus fees). |
-| exercise(uint256 amount) | Allows the token holder to exercise the option for a specified amount. Burns the OP and transfers the exercise currency to the COL contract and the underlying asset to the option owner. Calls the COL contract to transer both of the assets.|
-| redeemCollateral(uint256 amount) | Allows the token holder to redeem their collateral before expiration iff the holder also has the COL token |
-| The following are view functions that are the same for COL and OP|
+| constructor(string name, string symbol, address collateralAddress, address considerationAddress, uint256 expirationDate, uint256 strikeNum, uint256 strikeDen, bool isPut) | Creates both the long and short option tokens with specified parameters including name, symbol, asset addresses, expiration, strike price (as fraction num/den), and option type. |
+| mint(address to, uint256 amount) | Mints both long and short option tokens to the specified address. Requires sufficient collateral. |
+| exercise(address contractHolder, uint256 amount) | Allows exercising the option, transferring collateral to holder and consideration to the vault. Can only be called before expiration. |
+| redeem(address contractHolder, uint256 amount) | Allows redeeming both long and short tokens together before expiration to recover collateral. |
 | isExpired() | Checks if the option has expired |
-| optionType() | Returns the type of the option (call or put) |
-| collateralAddress() | Returns the address of the collateral token contract |
-| optionAddress() | Returns the address of the connected option contract |
-| underlyingAddress() | Returns the address of the underlying asset token |
-| considerationAddress() | Returns the address of the consideration asset token (typically USDC) |
-| exercisedBalance() | Returns the balance of the collateral that has been exercised |
+| optionType() | Returns the type of the option ("CALL" or "PUT") |
+| getCollateralBalance() | Returns the contract's balance of collateral tokens |
+| getConsiderationBalance() | Returns the contract's balance of consideration tokens |
 
 These functions provide the core functionality for the OP token, including standard ERC20 operations and option-specific actions like exercising and redeeming collateral.
 
-#### 2.3 Collateral Smart Contracts (COL)
+#### 2.3 Short Option Smart Contracts (SHORT)
 
 The Collateral Smart Contract (COL) represents the ERC20 Token for the Collateral. It is a tradable token that represents the collateral deposited by the user. The COL contract allows the owner to redeem the collateral at any time after the option expires.
 
@@ -139,16 +137,12 @@ In addition to the ERC20 functions, the COL contract includes the following func
 
 | Function | Description |
 |----------|-------------|
-| constructor(address _underlyingAddress, address _considerationAddress, uint256 _strike, uint256 _expiration, bool isPut) | Not user-facing. Sets the addresses of the underlying, and consideration asset contracts along with the strike price, expiration date, and option type. |
-| redeemCollateral(uint256 amount) | Allows the COL token holder to redeem their collateral after expiration. Burns the COL and transfers the collateral to the user. IF the underlying asset cas been exercised, the consideration asset is transferred to the COL holder. |
-| setOptionAddress(address option) | Not user-facing, OP contract only. Sets the address of the connected option contract |
-| exercise(uint256 amount, address optionOwner) | Not user-facing, OP contract only. Allows the option contract to exercise the option for a specified amount. Transfers the exercise currency to the COL contract, and the underlying asset to the option owner. |
-| The following are view functions that are the same for COL and OP|
-| isExpired() | Checks if the option has expired |
-| optionType() | Returns the type of the option (call or put) |
-| collateralAddress() | Returns the address of the collateral token contract |
-| optionAddress() | Returns the address of the connected option contract |
-| underlyingAddress() | Returns the address of the underlying asset token |
-| considerationAddress() | Returns the address of the consideration asset token (typically USDC) |
-| exercisedBalance() | Returns the balance of the collateral that has been exercised |
+| constructor(string name, string symbol, address collateralAddress, address considerationAddress, uint256 expirationDate, uint256 strikeNum, uint256 strikeDen, bool isPut) | Creates the short option token with specified parameters. |
+| mint(address to, uint256 amount) | Only callable by long option contract. Mints short tokens and transfers collateral to vault. |
+| redeem(address to, uint256 amount) | Allows redeeming short tokens after expiration for either collateral or consideration based on exercise status. |
+| redeemPair(address to, uint256 amount) | Only callable by long option contract. Allows redeeming paired tokens before expiration. |
+| exercise(address contractHolder, uint256 amount) | Handles the exercise process by transferring collateral to exerciser and collecting consideration. |
+| isBalanced() | Checks if the vault maintains proper balance of assets |
+| vaultCollateral() | Returns the vault's collateral token balance |
+| vaultConsideration() | Returns the vault's consideration token balance |
 
