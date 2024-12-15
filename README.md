@@ -1,148 +1,115 @@
-# Fully Collateralized DeFi Options [WIP]
-## Technical White Paper v1.0
-
-### Abstract
-We present a decentralized options protocol built on EVM-compatible blockchains that enables the creation, trading, and settlement of fully collateralized options contracts, calls and puts. The protocol supports any ERC20 token or native currency as the underlying asset, with settlement in ERC20 tokens also, including stablecoins such as USDC. Our design prioritizes security, capital efficiency, and composability/modularity while eliminating counterparty risk through full collateralization.
-
-### 1. Introduction
-#### 1.1 Background
-Traditional options markets require trusted intermediaries and expose participants to counterparty risk. Decentralized finance (DeFi) enables the creation of trustless, transparent options markets where smart contracts enforce the terms and hold collateral.
-
-Most options platforms and centralized exchanges which offer options are not fully collateralized. They are not secure and expose users to counterparty risk. The ability to move positions between platforms is limited and the ability to earn yield on collateral by selling covered calls is virtually non-existent. We leave the exploration of current options platforms and centralized exchanges to the appendix.
-
-#### 1.2 Motivation
-
-By introducing a smart contract into the options system, we have to break down the process into steps that differ from traditional options. We have to account for the fact that the smart contract will hold the collateral and that the process of exercising and settling options will be done through the smart contract.
-
-This departure from tradition requires a new way of thinking about options and the role of the smart contract. 
-Most options experts assume margin accounts and clearing counterparty to handle all the mechanics of options: collateral, exercise, settlement, etc. In a way, the onchain system can be interpreted more easily than the traditional systems that make many assumptions.
-
-#### 1.3 Call Options
-
-A call option is a contract that gives the buyer the right to buy a certain amount of an underlying asset (ASSET) prior to an expiration date (EXP) at a specified price (STRIKE) of a purchasing currency (CONSD). The seller of the call option is obligated to sell the underlying asset if the buyer decides to exercise the option priot to the expiration date. 
-
-| Variable | Description |
-|----------|-------------|
-| ASSET    | The underlying asset that the option is written on. |
-| CONSD   | The currency that the option is priced in. |
-| STRIKE   | The price of the underlying asset that the option gives the buyer the right to buy. |
-| EXP      | The date the option expires. |
+# Greek.fi - Decentralized Options
+## Overview
+Greek.fi is the only decentralized options protocol that allows for the creation of options with full collateralization. We provide simplified extensions that allow for more options strategies, such as covered call vaults, along with taking loans on the collateral, and more.
 
 
-Traditional Example: Alice owns 2 ETH and wants to write options on her position. She writes a call option on her position with a strike price of 3000 USD and an expiration date of 30 days from now. Bob buys the option from her. Bob now has the right to buy 2 ETH from Alice at the price of 3000 USD per ETH prior to the expiration date.
+## Introduction
+We have built a decentralized American style options protocol that allows for the creation of options with full collateralization.
+
+Typically, options have been centralized, with providers like Deribit being the most popular. These providers use margin to allow a variety of options to be created and traded. Additionally, most derivative strategies involve perpetual futures, which require oracles for pricing. 
+
+Our protocol is designed to be a decentralized alternative to these providers. No oracles are required, and no margin is required. Additionally, any locked collateral used to create one side of the trade can be used as collateral for loans, as the position is represented by an ERC20 token.
+
+## Protocol Overview
+
+Our protocol is simple. 
+Any ERC20 token can be used as collateral for options. This includes WBTC, WETH, stETH, SBTC, AAVE, UNI, and more.
+The user chooses the strike price, expiration, and option type (call or put) when creating the option.
+A user mints two ERC20 tokens when creating an option:
+- LONG: Represents the right to exercise the option
+- SHORT: Represents the obligation and right to the collateral
+
+Use any EVM compatible chain to mint the options.
+
+### What can you do with the tokens?
+#### LONG token
+The long token represents the position of the option buyer, they are entitled to purchase the underlying collateral asset when the option is exercised.
+- The LONG token can allow you to exercise the option at any time before expiration.
+- The LONG token can be traded on DEXs like Uniswap, CoW, and RFQs like 0x, Bebop.
+
+#### SHORT token
+The short token represents the position of the option writer, they are obligated to swap the underlying collateral asset for the consideration asset when the LONG option is exercised.
+- The SHORT token can be used to redeem the underlying asset after expiration.
+- The SHORT token can be used as collateral for loans (Silo).
+- Together, the LONG and SHORT tokens can be redeemed for the underlying asset before expiration to recover the collateral (Neutral position).
+
+### How is this possible?
+The two tokens/contracts are linked to each other. When the LONG token is exercised, the LONG contract interacts with the SHORT contract to swap the underlying collateral asset for the consideration asset.
+
+Similarly, when using both tokens together, the LONG and SHORT contracts interact to redeem both tokens for the collateral, pre-expiration. Post expiration, the SHORT token, alone, can be redeemed for the underlying asset.
+
+### No Margin? No Oracles?
+Because the LONG and SHORT tokens are linked to each other, the protocol is able to provide a margin-free experience. 
+
+### Example: Minting Options
+1. Connect your wallet to the protocol
+2. Select option parameters:
+   - Collateral Asset: WETH
+   - Consideration Asset: USDC
+   - Strike Price: 5000 USDC
+   - Expiration Date: 30 days
+   - Option Type: Call
+3. Mint Approve the LONG contract to capture your WETH
+4. Receive LONG and SHORT tokens
+
+## Trading
+Once options are minted, the obvious question is how to trade them. We have considered using a DEX AMM, such as Uniswap, but options could have low volume and low liquidity. This can cause slippage and nobody wants that.
+
+The obvious solution is to use RFQs, such as 0x, Bebop, etc. This allows for the options to be traded at a price that is determined by the market. This would allow partnering with market makers to provide liquidity for the options. This would also solve pricing the options where the MMs set their own prices. This will create a new market maker ecosystem.
+
+### What about the Short Token?
+Good Question. The SHORT token represents two things: Collateral/consideration ownership and a short position in the option trade. Let's say you sold an in the money call (WETH at 3000 expiring soon). When you sold your LONG token you received a premium of 1000 USDC in addition to IV and Time Value. This is potentially priced in the SHORT token making it tradable since it has a value.
+
+## Vaults
+Vaults allow for more complex strategies using the options protocol. This simplifies the experience for users and reduces the amount of work required to implement these strategies. 
+
+#### Covered Call Vaults
+One strategy, such as covered call vaults, which allow for the creation of options with a portion of the collateral as the option premium. A simple strategy could involve users depositing WETH as collateral, and then the vault handles 
+1. minting options with the collateral, 
+2. selling the options, 
+3. let the options expire worthless, 
+4. redeem the collateral, 
+5. mint more options with the collateral and repeat. 
+
+This strategy is nearly identical to ETF strategies (ie XYLD). Covered call vaults do not exist on chain, but this protocol allows for the creation of these strategies. This same strategy can be applied for Covered Put vaults, where the vault mints the put options and sells them.
+
+#### Margined Options Vaults
+Similar to covered call vaults, margined options vaults allow for the minting of call options using collateral. Afterwards, the vault takes a loan on the collateral (AAVE, Silo, etc) and uses the proceeds to mint more options. This allows for the vault to mint more options than it would have been able to otherwise. 
 
 
-#### 1.4  Call Options on Chain
-Example: Alice owns 2 wETH and wants to write options on her position. She decides to write a call option with a strike price of 3000 USD and an expiration date of 30 days from now. 
+## FAQ
+#### In the traditional covered call world, I don't need to mint tokens or anything. Why do I need to mint tokens here?
 
-Alice deposits 2 wETH into the Option Swap Contract (OSC) as collateral. The OSC mints and transfers 2 Long Call Option Tokens (LONG) and 2 Short Call Option Tokens (SHORT) to Alice that represents her position. 
+In traditional call strategies, the custodian (E-Trade, Fidelity, etc) holds the collateral and establishes the short position. On Chain, we do not have custodians. We have smart contracts. We need to mint tokens to represent the two positions, which technically is neutral wrt to the option trade. 
 
-Alice lists the LONG for sale on a market (Uniswap etc.) and Bob buys the option from Alice. Bob has the choice to either hold the LONG or sell it on the market if the price moves in his favor. 
+#### Why do this on chain?
+You don't have to. If you're looking for high frequency trading, this is not for you. If you're looking for a low-friction, low-cost way to create covered options strategies, this is for you. 
 
-From Bob's perspective, there are three possible outcomes:
+#### Ok, I'm holding X, why do this? couldn't I just get a loan on the X and buy more X? 
+Again, you don't have to, but this is almost like staking. 
 
-1. Bob allows the LONG to expire.
-2. Bob sells the LONG on the market before expiration.
-3. Before expiration, Bob interacts with the LONG smart contract to exercise the option by depositing USDC and receiving wETH.
+#### Explain this SHORT token? isn't that just a PUT?
+The short token is simply a combination of two things: Your ownership of the collateral + the short position in the option trade. The SHORT token is basically looking at your brokerage account and seeing "1 wETH + (-1 call option)". If you tack on a LONG token it's like seeing "1 wETH + (-1 call option) + 1 call option" which equals "1 wETH".
 
-From Alice's perspective, there are two possible outcomes:
+#### How do you do this for PUTs?
+Yes! Believe it or not, puts are simply calls the consideration and collateral are swapped. For example, in a put use USDC becomes the collateral and WETH is the consideration. What this means is that you have the option to"buy" USDC with your WETH.
 
-1. After expiration, 
-    1. Alice can claim the underlying asset (wETH) from the OSC, or if all the collateral has been exercised...
-    2. Alice can claim the purchase currency (USDC) from OSC.
-2. Before expiration, 
-    1. Alice can buy back the LONG from the market and withdraw her collateral through redemption by holding the LONG and the SHORTs
-    2. Alice can sell the LONG on the market.
+ The only real difference between puts and calls is the strike price. In a call you buy 1 wETH for 4000 USDC, so in a put instead of saying "buy USDC for 0.00025 wETH/USDC" you say "sell you 1 wETH for 4000 USDC/wETH".
 
-The OSC allows anyone to bring any ERC20 token as collateral and write options on it. This is a powerful feature that allows for a wide range of options to be written on any ERC20 asset.
+#### I want to buy some options, how do I do that?
+Use the trade page to buy options. It uses x0 and Bebop to provide liquidity and execute trades.
 
+#### Okay, I'm up on my options, how do I sell them?
+Use the trade page to sell options, as well as buy. 
 
-![Option Swap Contract Diagram](diagram1.png)
+#### Can I try this on Testnets?
+Yes, definitely. Choose testnets when you mint. We'll give you free wETH testnet tokens to mint with.
 
-#### 1.5 Put Options On Chain
-This process is similar to the call option system, the main difference is that the Put Option Writer needs to collateralize the purchase currency (CONSD) instead of the underlying asset (ASSET). This currency is used to purchase the underlying asset at the strike price from the Put Option Buyer.
-
-Let's dive into an example. Alice is willing to buy 2 wETH at the price of 2000 USDC per wETH. She collateralizes 4000 USDC into the OSC and gets 2 Long Put Option Tokens (LONG) and 2 Short Put Option Tokens (SHORT) that represent her position and the collateral she put up.
-
-Alice lists the LONG for sale on a market (Uniswap etc.) and Bob buys the option from Alice. Bob has the choice to either hold the LONG or sell it on the market if the price moves down in his favor.
-
-From Bob's perspective, there are three possible outcomes:
-
-1. Bob allows the LONG to expire.
-2. Bob sells the LONG on the market before expiration.
-3. Before expiration, Bob interacts with the LONG smart contract to exercise the option by depositing wETH and receiving USDC.
-
-<!-- ![Put Option Swap Contract Diagram](diagram2.png) -->
-
-#### 1.6 Symmetry in Calls and Puts
-Both of the on-chain Call and Put strategies simply involve two steps: 1. collateralizing an asset and 2. exercising to swap a currency consideration for the collateral. In the Calls example, wETH is used as collateral and the currency is USDC.  In the Puts example, USDC is used as collateral and the currency is wET. 
-
-Because the collateral and consideration are swapped, mathematically, the strike price is inverted (i.e. 2000 USDC per ETH instead of 0.0005 ETH per USDC). Since they are nearly symmetric, a simple flag is added to the option contract to indicate if it is a call or a put to display the appropriate strike price in traditional terms.
-
-### 2. Technical
-
-#### 2.1 Option Swap Contract
-The option swap contract (OSC) is the gateway to the options system. 
-It provides the interface to users to collateralize assets in turn creating option tokens and collateral tokens.
-The OSC provides the following key functions:
-
-| Function | Description |
-|----------|-------------|
-| Mint New Option and Collateral Tokens | Allows users to create new Options Tokens (OP) and Collateral Tokens (COL) by specifying parameters such as strike price, expiration date, and underlying asset, and exercise currency. This generates a new pair of Smart Contracts for the respective quintuple (STRIKE, EXP, ASSET, CONSD, isPut). |
-| collaterize or mint(address asset, uint256 amount) | Allows users to collateralize an asset and receive OP and COL tokens in return. |
-
-Once these contracts are created, the OSC does not need to be involved in the option lifecycle. The OP and COL contracts are self-contained and can be traded and exercised on secondary markets. The OSC is simply a factory that creates the contracts. The mint function is simply a convenience function to mint the tokens and collateralize the asset in one step if the OP/COL pair doesn't exist.
-
-#### 2.1a Standard ERC20 Functions (for Convenience):
-
-| Function | Description |
-|----------|-------------|
-| transfer(address to, uint256 amount) | Transfers a specified amount of tokens to the given address |
-| transferFrom(address from, address to, uint256 amount) | Transfers tokens from one address to another, given approval |
-| approve(address spender, uint256 amount) | Approves a spender to spend a certain amount of tokens |
-| balanceOf(address account) | Returns the token balance of a given address |
-| totalSupply() | Returns the total supply of tokens |
-| allowance(address owner, address spender) | Returns the remaining allowance for a spender |
-| name() | Returns the name of the token |
-| symbol() | Returns the symbol of the token |
-| decimals() | Returns the number of decimals for the token |
-
-
-#### 2.2 Long Option Smart Contracts (LONG)
-
-The Long Option Smart Contract (LONG) represents the ERC20 Token representing the Long Option. It is a tradable token that represents the option contract. The LONG contract allows the owner to exercise the option at any time before expiration. The buyer can exercise the option by depositing the exercise currency (CONSD) and receiving the underlying asset (ASSET).
-
-The LONG contract owns the SHORT contract, allowing proper interaction with the collateral, mainly through exercise along with redemption/burning if the user owns the SHORT token. 
-
-In addition to the ERC20 functions, the LONG contract includes the following functions:
-
-| Function | Description |
-|----------|-------------|
-| constructor(string name, string symbol, address collateralAddress, address considerationAddress, uint256 expirationDate, uint256 strikeNum, uint256 strikeDen, bool isPut) | Creates both the long and short option tokens with specified parameters including name, symbol, asset addresses, expiration, strike price (as fraction num/den), and option type. |
-| mint(address to, uint256 amount) | Mints both long and short option tokens to the specified address. Requires sufficient collateral. |
-| exercise(address contractHolder, uint256 amount) | Allows exercising the option, transferring collateral to holder and consideration to the vault. Can only be called before expiration. |
-| redeem(address contractHolder, uint256 amount) | Allows redeeming both long and short tokens together before expiration to recover collateral. |
-| isExpired() | Checks if the option has expired |
-| optionType() | Returns the type of the option ("CALL" or "PUT") |
-| getCollateralBalance() | Returns the contract's balance of collateral tokens |
-| getConsiderationBalance() | Returns the contract's balance of consideration tokens |
-
-These functions provide the core functionality for the OP token, including standard ERC20 operations and option-specific actions like exercising and redeeming collateral.
-
-#### 2.3 Short Option Smart Contracts (SHORT)
-
-The Collateral Smart Contract (COL) represents the ERC20 Token for the Collateral. It is a tradable token that represents the collateral deposited by the user. The COL contract allows the owner to redeem the collateral at any time after the option expires.
-
-In addition to the ERC20 functions, the COL contract includes the following functions:
-
-| Function | Description |
-|----------|-------------|
-| constructor(string name, string symbol, address collateralAddress, address considerationAddress, uint256 expirationDate, uint256 strikeNum, uint256 strikeDen, bool isPut) | Creates the short option token with specified parameters. |
-| mint(address to, uint256 amount) | Only callable by long option contract. Mints short tokens and transfers collateral to vault. |
-| redeem(address to, uint256 amount) | Allows redeeming short tokens after expiration for either collateral or consideration based on exercise status. |
-| redeemPair(address to, uint256 amount) | Only callable by long option contract. Allows redeeming paired tokens before expiration. |
-| exercise(address contractHolder, uint256 amount) | Handles the exercise process by transferring collateral to exerciser and collecting consideration. |
-| isBalanced() | Checks if the vault maintains proper balance of assets |
-| vaultCollateral() | Returns the vault's collateral token balance |
-| vaultConsideration() | Returns the vault's consideration token balance |
-
+## Appendix
+### Key Concepts
+- **Call Option**: Right to buy an asset at a specified price before expiration
+- **Put Option**: Right to sell an asset at a specified price before expiration 
+- **Strike Price**: The price at which the option can be exercised
+- **Expiration Date**: The last date the option can be exercised
+- **LONG Token**: Represents the right to exercise the option
+- **SHORT Token**: Represents the obligation and right to the collateral
