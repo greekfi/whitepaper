@@ -1,0 +1,390 @@
+\documentclass[%
+ reprint,
+%superscriptaddress,
+%groupedaddress,
+%unsortedaddress,
+%runinaddress,
+%frontmatterverbose, 
+%preprint,
+%preprintnumbers,
+%nofootinbib,
+%nobibnotes,
+%bibnotes,
+ amsmath,amssymb,
+ aps,
+%pra,
+%prb,
+%rmp,
+%prstab,
+%prstper,
+%floatfix,
+]{revtex4-2}
+
+\usepackage{graphicx}% Include figure files
+\usepackage{dcolumn}% Align table columns on decimal point
+\usepackage{bm}% bold math
+%\usepackage{hyperref}% add hypertext capabilities
+%\usepackage[mathlines]{lineno}% Enable numbering of text and display math
+%\linenumbers\relax % Commence numbering lines
+
+%\usepackage[showframe,%Uncomment any one of the following lines to test 
+%%scale=0.7, marginratio={1:1, 2:3}, ignoreall,% default settings
+%%text={7in,10in},centering,
+%%margin=1.5in,
+%%total={6.5in,8.75in}, top=1.2in, left=0.9in, includefoot,
+%%height=10in,a5paper,hmargin={3cm,0.8in},
+%]{geometry}
+\newcommand{\greekfi}{Greek.fi }
+
+
+\begin{document}
+
+\title{\greekfi: Decentralized American-style Options Protocol}
+
+\author{Mahmoud Lababidi}
+\email{ml@greek.fi}
+\affiliation{%
+\greekfi Protocol\\
+Decentralized Options Protocol
+}
+
+\date{June 26, 2025}
+
+\begin{abstract}
+\greekfi is a protocol that enables decentralized American-style exercise options that are fully collateralized without requiring oracles or margin. 
+It is designed for composability, exercisability, and univsersal use on any EVM compatible chain and allows any ERC20 token to be used as collateral and consideration ( i.e. WBTC, WETH, stETH, USDC, USDT) 
+
+Similar to yield generating tokens, the protocol generates two ERC20 tokens: a redemption token (which provides capital efficiency) and an option token.
+We dive into the menchanics of these tokens and how they impact a new level of composibility to create a new options ecosystem that both, encompasses and surpasses traditional financial options strategies.
+
+
+\end{abstract}
+
+\maketitle
+
+\section{\label{sec:introduction}Introduction}
+
+\subsection{Overview}
+Options in the crypto have exploded in usage and approaches. Currently, there's over \$6B USD in 24hour volume in perpetuals trading. 
+Additionally, Deribit was purchased by Coinbase for nearly \$3B USD. 
+This is of no surprise as the traditional finance market sees \$2.7T USD in daily notional trading in the options market (\$600B in open interest daily) the crypto market can easily catch up to these numbers.
+
+One issue arises in the current state of the options industry in the DeFi space: early exercizable (American) options have not existed in a decentralized, tokenized manner.
+American options need the following abilities to be considered as such:
+\begin{itemize}
+  \item Expirable at some future fixed date
+  \item exercizable so that the option holder can swap consideration for underlying collateral prior to expiration
+  \item The option writer can use the collateral freely after expiration, unless...
+  \item The contract written has been exercised, providing consideration to the option writer to be used freely
+\end{itemize}
+
+In order to achieve the goal of providing an American options protocol in a fully decentralized manner, all of the above needs to be solved in a decentralized manner.
+We present the \greekfi Options Protol, the first fully decentralized, collateralized, tokenized, exercizable, expirable options protocol in the Ethereum ecosystem.
+The protocol achieves the following:
+\begin{itemize}
+  \item Fully ERC20 compatible - allowing full composability
+  \item Fully collateralized protocol so that every option can be exercised to swap for the collateral
+  \item Exercizable so that the option holder can swap consideration tokens for the collateral
+  \item The option writer can redeem consideration prior to expiration, or
+  \item The option writer can redeem collateral post expiration, or
+  \item The option writer can redeem collateral prior to expiration if they also own the option
+  \item Two tokens/contracts drive the protocol (LONG and SHORT) similar to yield platforms
+  \item Oracle free, margin free
+\end{itemize}
+
+This protocol will unlock a trove of possibilities to DeFi, for example:
+
+\begin{itemize}
+  \item hedge risk
+  \item take on risk
+  \item leverage
+  \item earn yield through covered calls
+  \item transfer options from within ecosytems to other ecosystems
+\end{itemize}
+
+
+\greekfi is a decentralized American-style options protocol that allows for the creation of options with full collateralization. 
+The design of the protocol along with full collateralization allows exercisability, composability, and universal use on any EVM compatible chain.
+
+\subsection{Background}
+
+Options in the crypto space have grown.
+With the purchase of Deribit by Coinbase, the options ecosystem has 
+
+\greekfi is a decentralized American style options protocol that
+allows for the creation of options with full collateralization.
+
+Typically, options have been centralized, with providers like Deribit, 
+being the most popular. These providers use margin to allow a variety of
+options to be created and traded. Additionally, most derivative
+strategies involve perpetual futures, which require oracles for pricing.
+
+Our protocol is designed to be a decentralized alternative to these
+providers. No oracles are required, and no margin is required.
+Additionally, any locked collateral used to create one side of the trade
+can be used as collateral for loans, as the position is represented by
+an ERC20 token.
+
+One limitation in all the different ecosystems is the ability to connect them and take them to other chains.
+
+\section{\label{sec:protocol}Protocol Overview}
+
+The \greekfi protocol is a contract factory system that creates a new pair of contracts for each tuple that represents an options 
+(Collateral, Consideration, Strike, Expiration, CallOrPut). This allows the protocol to be upgradeable with new features to improve useability. 
+The pair of contracts created are two ERC20 contracts that are coupled to each other, LONG and SHORT. 
+By depositing collateral tokens into the protocol, one mints the two tokens allowing them to be used in different strategies.
+Let's desccribe the tokens in detail to illustrate their usability. 
+
+\subsubsection{LONG Token}
+
+The LONG token represents the position of the option buyer, they are
+entitled to purchase the underlying collateral asset when the option is
+exercised.
+\begin{itemize}
+\item The LONG token can allow you to exercise the option at any
+time before expiration.
+\item The LONG token can be traded on DEXs like
+Uniswap, CoW, and RFQs like 0x, Bebop.
+\end{itemize}
+
+\subsubsection{SHORT Token}
+
+The short token represents the position of the option writer, they are
+obligated to swap the underlying collateral asset for the consideration
+asset when the LONG option is exercised.
+\begin{itemize}
+\item The SHORT token can be used
+to redeem the underlying asset after expiration.
+\item The SHORT token can
+be used as collateral for loans (Silo).
+\item Together, the LONG and SHORT
+tokens can be redeemed for the underlying asset before expiration to
+recover the collateral (Neutral position).
+\end{itemize}
+
+
+Our protocol is simple. Any ERC20 token can be used as collateral for
+options. This includes WBTC, WETH, stETH, SBTC, AAVE, UNI, and more. The
+user chooses the strike price, expiration, and option type (call or put)
+when creating the option. A user mints two ERC20 tokens when creating an
+option:
+\begin{itemize}
+\item \textbf{LONG}: Represents the right to exercise the option
+\item \textbf{SHORT}: Represents the obligation and right to the collateral
+\end{itemize}
+
+Use any EVM compatible chain to mint the options.
+
+\subsection{Token Functionality}
+
+
+\subsection{Technical Implementation}
+
+\subsubsection{Token Linking}
+
+The two tokens/contracts are linked to each other. 
+
+\subsubsection{Margin-Free Design}
+
+Because the LONG and SHORT tokens are linked to each other, the protocol
+is able to provide a margin-free experience.
+
+\subsubsection{Collateralization}
+
+The protocol is able to provide full collateralization for the options.
+
+
+\subsubsection{Compound Options}
+
+The protocol is able to provide compound options. This allows for the creation of options with multiple underlying assets.
+
+
+\subsubsection{Loanable Collateral}
+
+The protocol is able to provide loanable collateral for the options.
+
+
+\subsubsection{Composibility}
+
+The protocol is able to be composed with other protocols to create more complex strategies.
+
+
+\subsubsection{Default Swaps}
+
+The protocol is able to provide default swaps for the options.
+
+OPTION INSTEAD OF TOKENS DROP
+
+\subsection{Example: Minting Options}
+
+\begin{enumerate}
+\item
+  Connect your wallet to the protocol
+\item
+  Select option parameters:
+  \begin{itemize}
+  \item
+    Collateral Asset: WETH
+  \item
+    Consideration Asset: USDC
+  \item
+    Strike Price: 5000 USDC
+  \item
+    Expiration Date: 30 days
+  \item
+    Option Type: Call
+  \end{itemize}
+\item
+  Mint Approve the LONG contract to capture your WETH
+\item
+  Receive LONG and SHORT tokens
+\end{enumerate}
+
+\section{\label{sec:trading}Trading}
+
+Once options are minted, the obvious question is how to trade them. We
+have considered using a DEX AMM, such as Uniswap, but options could have
+low volume and low liquidity. This can cause slippage and nobody wants
+that.
+
+The obvious solution is to use RFQs, such as 0x, Bebop, etc. This allows
+for the options to be traded at a price that is determined by the
+market. This would allow partnering with market makers to provide
+liquidity for the options. This would also solve pricing the options
+where the MMs set their own prices. This will create a new market maker
+ecosystem.
+
+\subsection{Short Token Trading}
+
+The SHORT token represents two things:
+Collateral/consideration ownership and a short position in the option
+trade. Let's say you sold an in the money call (WETH at 3000 expiring
+soon). When you sold your LONG token you received a premium of 1000 USDC
+in addition to IV and Time Value. This is potentially priced in the
+SHORT token making it tradable since it has a value.
+
+\section{\label{sec:vaults}Vaults}
+
+Vaults allow for more complex strategies using the options protocol.
+This simplifies the experience for users and reduces the amount of work
+required to implement these strategies.
+
+\subsection{Covered Call Vaults}
+
+One strategy, such as covered call vaults, which allow for the creation
+of options with a portion of the collateral as the option premium. A
+simple strategy could involve users depositing WETH as collateral, and
+then the vault handles:
+\begin{enumerate}
+\item minting options with the collateral
+\item selling the options
+\item let the options expire worthless
+\item redeem the collateral
+\item mint more options with the collateral and repeat
+\end{enumerate}
+
+This strategy is nearly identical to ETF strategies (i.e., XYLD). Covered
+call vaults do not exist on chain, but this protocol allows for the
+creation of these strategies. This same strategy can be applied for
+Covered Put vaults, where the vault mints the put options and sells
+them.
+
+\subsection{Margined Options Vaults}
+
+Similar to covered call vaults, margined options vaults allow for the
+minting of call options using collateral. Afterwards, the vault takes a
+loan on the collateral (AAVE, Silo, etc) and uses the proceeds to mint
+more options. This allows for the vault to mint more options than it
+would have been able to otherwise.
+
+\section{\label{sec:faq}FAQ}
+
+\subsection{Traditional vs. On-Chain Options}
+
+\paragraph{In the traditional covered call world, I don't need to mint
+tokens or anything. Why do I need to mint tokens here?}
+
+In traditional call strategies, the custodian (E-Trade, Fidelity, etc)
+holds the collateral and establishes the short position. On Chain, we do
+not have custodians. We have smart contracts. We need to mint tokens to
+represent the two positions, which technically is neutral wrt to the
+option trade.
+
+\paragraph{Why do this on chain?}
+
+You don't have to. If you're looking for high frequency trading, this is
+not for you. If you're looking for a low-friction, low-cost way to
+create covered options strategies, this is for you.
+
+\paragraph{Ok, I'm holding X, why do this? couldn't I just get a loan on
+the X and buy more X?}
+
+Again, you don't have to, but this is almost like staking.
+
+\subsection{Technical Questions}
+
+\paragraph{Explain this SHORT token? isn't that just a PUT?}
+
+The short token is simply a combination of two things: Your ownership of
+the collateral + the short position in the option trade. The SHORT token
+is basically looking at your brokerage account and seeing ``1 wETH + (-1
+call option)''. If you tack on a LONG token it's like seeing ``1 wETH +
+(-1 call option) + 1 call option'' which equals ``1 wETH''.
+
+\paragraph{How do you do this for PUTs?}
+
+Yes! Believe it or not, puts are simply calls where the consideration and
+collateral are swapped. For example, in a put use USDC becomes the
+collateral and WETH is the consideration. What this means is that you
+have the option to ``buy'' USDC with your WETH.
+
+The only real difference between puts and calls is the strike price. In
+a call you buy 1 wETH for 4000 USDC, so in a put instead of saying ``buy
+USDC for 0.00025 wETH/USDC'' you say ``sell you 1 wETH for 4000
+USDC/wETH''.
+
+\subsection{User Experience}
+
+\paragraph{I want to buy some options, how do I do that?}
+
+Use the trade page to buy options. It uses 0x and Bebop to provide
+liquidity and execute trades.
+
+\paragraph{Okay, I'm up on my options, how do I sell them?}
+
+Use the trade page to sell options, as well as buy.
+
+\paragraph{Can I try this on Testnets?}
+
+Yes, definitely. Choose testnets when you mint. We'll give you free wETH
+testnet tokens to mint with.
+
+\section{\label{sec:appendix}Appendix}
+
+\subsection{Key Concepts}
+
+\begin{itemize}
+\item
+  \textbf{Call Option}: Right to buy an asset at a specified price
+  before expiration
+\item
+  \textbf{Put Option}: Right to sell an asset at a specified price
+  before expiration
+\item
+  \textbf{Strike Price}: The price at which the option can be exercised
+\item
+  \textbf{Expiration Date}: The last date the option can be exercised
+\item
+  \textbf{LONG Token}: Represents the right to exercise the option
+\item
+  \textbf{SHORT Token}: Represents the obligation and right to the
+  collateral
+\end{itemize}
+
+\begin{acknowledgments}
+We wish to acknowledge the support of the DeFi community in developing
+Greek.fi, offering suggestions and encouragement, testing new versions,
+and providing valuable feedback on the protocol design and implementation.
+\end{acknowledgments}
+
+\end{document}
