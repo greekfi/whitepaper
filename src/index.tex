@@ -1,4 +1,4 @@
-\title{\greekfi: Decentralized American-style Options Protocol}
+\title{\greekfi: Decentralized American-Style Options Protocol}
 
 \author{Mahmoud Lababidi}
 \email{ml@greek.fi}
@@ -11,10 +11,10 @@ Decentralized Options Protocol
 
 \begin{abstract}
 \greekfi is a protocol that enables decentralized American-style exercise options that are fully collateralized without requiring oracles or margin. 
-It is designed for composability, exercisability, and univsersal use on any EVM compatible chain and allows any ERC20 token to be used as collateral and consideration ( i.e. WBTC, WETH, stETH, USDC, USDT) 
+It is designed for composability, exercisability, and universal use on any EVM-compatible chain and allows any ERC20 token to be used as collateral and consideration, including WBTC, WETH, stETH, USDC, and USDT. 
 
 Similar to yield generating tokens, the protocol generates two ERC20 tokens: a redemption token (which provides capital efficiency) and an option token.
-We dive into the menchanics of these tokens and how they impact a new level of composibility to create a new options ecosystem that both, encompasses and surpasses traditional financial options strategies.
+We dive into the mechanics of these tokens and how they impact a new level of composability to create a new options ecosystem that both encompasses and surpasses traditional financial options strategies.
 
 
 \end{abstract}
@@ -24,36 +24,27 @@ We dive into the menchanics of these tokens and how they impact a new level of c
 \section{\label{sec:introduction}Introduction}
 
 \subsection{Background}
-Options in the crypto have exploded recently in usage and types of approaches. 
-On average across 24hour spans, over \$6B of trading volume occurs in perpetual markets. 
-In addition, Deribit was recently purchased by Coinbase for nearly \$3B USD. 
-This is of no surprise as the traditional finance market sees \$2.7T USD in daily notional trading in the options market (\$600B in open interest daily) the crypto market can easily catch up to these numbers.
+Options in crypto have exploded recently in usage and types of approaches. 
+Across 24-hour averages, over \$6B of trading volume occurs in perpetual markets. 
+In addition, Deribit was recently purchased by Coinbase for nearly \$3B. 
+This is unsurprising and can see a ramp-up to catch up to the traditional finance market as the traditional finance market sees \$2.7T USD in daily notional trading in the options market and \$600B in daily open interest. 
 
-One issue exists in the current state of the options industry in the DeFi space: early exercisable (American) options have not existed in a decentralized, tokenized manner.
-Options need the following abilities to be considered American style:
-\begin{itemize}
-  \setlength{\itemsep}{0pt}
-  \setlength{\parskip}{0pt}
-  \item Expirable at some future fixed date
-  \item Exercisable so that the option holder can swap consideration for underlying collateral prior to expiration
-  \item The option writer can use the collateral freely after expiration, unless...
-  \item The contract written has been exercised, providing consideration to the option writer to be used freely
-\end{itemize}
+The DeFi space still has room to grow but one issue may be holding it back from growth: early exercisable (American) options do not exist in a liquid, decentralized, tokenized manner which will allow options to become as commonplace in the DeFi ecosystem as yield generating tokens. 
+Early exercise is an added benefit in options because it gives in-the-money holders an incentive to exercise early.
 
-In order to achieve the goal of providing an American options protocol in a fully decentralized manner, all of the above needs to be solved in a decentralized manner.
-We present the \greekfi Options Protol, the first fully decentralized, collateralized, tokenized, exercisable, expirable options protocol in the Ethereum ecosystem.
-The protocol achieves the following:
+To solve this, we introduce the \greekfi protocol, the first fully decentralized, collateralized, tokenized, exercisable, expirable options protocol in the Ethereum ecosystem.
+The protocol achieves the following, which fulfill the requirements for an American options:
 \begin{itemize}
   \setlength{\itemsep}{0pt}
   \setlength{\parskip}{0pt}
   \item Fully ERC20 compatible - allowing full composability
   \item Fully collateralized protocol so that every option can be exercised to swap for the collateral
-  \item exercisable so that the option holder can swap consideration tokens for the collateral
-  \item The option writer can redeem consideration prior to expiration, or
-  \item The option writer can redeem collateral post expiration, or
+  \item Exercisable so that the option holder can swap consideration tokens for the collateral
+  \item The option writer can redeem consideration prior to expiration
+  \item The option writer can redeem collateral post expiration
   \item The option writer can redeem collateral prior to expiration if they also own the option
   \item Two tokens/contracts drive the protocol (LONG and SHORT) similar to yield platforms
-  \item Oracle free, margin free
+  \item Oracle-free, margin-free
 \end{itemize}
 
 This protocol will unlock a trove of possibilities to DeFi, for example:
@@ -61,36 +52,57 @@ This protocol will unlock a trove of possibilities to DeFi, for example:
 \begin{itemize}
   \setlength{\itemsep}{0pt}
   \setlength{\parskip}{0pt}
-  \item hedge short term and long term risk as well as take on risk
-  \item use leverage without getting margin called
-  \item earn yield through covered calls
-  \item create exotic options strategies
-  \item create unique underlying swap pairs beyond USD bases
-  \item transfer options from within ecosytems to other ecosystems
-  \item be tradable in both OTC and other markets
+  \item Hedge short-term and long-term risk as well as take on risk
+  \item Use leverage without getting margin called
+  \item Earn yield through covered calls
+  \item Create exotic options strategies
+  \item Create unique underlying swap pairs beyond USD bases
+  \item Transfer options from within ecosystems to other ecosystems
+  \item Trade options in both OTC and other markets
 \end{itemize}
 
 \section{\label{sec:protocol}Protocol Overview}
 
-The \greekfi protocol uses a contract factory that creates a new pair (SHORT and LONG) of contracts for each option.
-This allows the protocol to be upgradeable with new features to improve useability 
-and ERC20 composability in SHORT and LONG, a necessity in the adoption of options as tokens.
-Minting involves depositing collateral tokens into the protocol, returning SHORT and LONG tokens.
-Each option pair is represented by a tuple 
+The \greekfi protocol uses a contract factory, allowing upgradability, which creates a new pair (SHORT and LONG) of ERC20 contracts/tokens for each option type created (i.e. WETH/USDC, WBTC/USDC).
+The pair token creation provides ERC20 composability in SHORT and LONG, a necessity in the adoption of options as tokens.
+The pair provides a minting interface where depositing collateral tokens returns SHORT and LONG tokens.
+Each option pair is represented by a tuple of the following parameters:
 \begin{equation*}
   (Collateral, Consideration, Strike, Expiration, isPut).
 \end{equation*}
 
-In Options, Consideration is paid in exchange for the Collateral. They are both represented by contract addresses.
+In Options, Collateral is the underlying asset that the option holder has the right to purchase, while Consideration is the asset paid in exchange for the Collateral. They are both represented by contract addresses.
 The Expiration is the last date the option can be exercised. 
 It is represented as a Unix timestamp, similar to block timestamps.
 The Strike is the price at which the option can be exercised.
-The Strike is represented as a ratio of the Consideration to the Collateral with an additional temporary multiplier of $10^{18}$ as a buffer.
-isPut is a boolean that indicates if the option is a Put option. Note, that this is only for vanity, since this protocol allows any asset to be used as collateral and any asset to be used as consideration. This flexibility removes any special complications of Put options. Only the front end handles inverting the Strike price for the user. (i.e. 1000 USDC for 1 WETH is represented as 1 USDC for .0001 WETH).
+The Strike is represented as a ratio of the Consideration to the Collateral with an additional temporary multiplier of $10^{18}$ as a buffer since solidity does not support decimals.
+The boolean, isPut, indicates if the option is a Put option, which is only for vanity. 
+This protocol allows the collateral and consideration to be any ERC20 asset, meaning USDC and WETH could be collateral/consideration or consideration/collateral. 
+This flexibility removes any special complications of Put options. 
+Only the front end handles inverting the Strike price for the user (i.e., 1000 USDC for 1 WETH is represented as 1 USDC for .0001 WETH). This is similar to how Swapping platforms visualize the price, where it is inverted when clicked. In the future, there may be a way to automatically determine if a pair is considered a Put or Call, but a puzzle to the reader, is WETH/WBTC a call or a put?
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{swap1.png}
+    \caption{Swap 1}
+    \label{fig:swap1}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{swap2.png}
+    \caption{Swap 2}
+    \label{fig:swap2}
+  \end{subfigure}
+  \caption{Swap diagrams}
+  \label{fig:swaps}
+\end{figure}
 
-The LONG and SHORT contracts are coupled to each other, meaning any interaction with the LONG token interacts with the SHORT token.
-This is how exercisability is achieved as well as redemption of the collateral. 
-See the diagram below for a visual representation of the a coupled process of an exercise.
+
+The LONG and SHORT contracts are coupled to each other, meaning every interaction with the LONG token will interact with the SHORT token.
+The proper movement of collateral and consideration through exercise and redemption is heavily dependent on this coupling.
+
+The diagram below is a visual representation of an exercise, a coupled process. 
+In order to exercise the SHORT option, the user's consideration is swapped for the collateral held by the SHORT contract.
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.5\textwidth]{exercise.png}
@@ -101,11 +113,11 @@ See the diagram below for a visual representation of the a coupled process of an
 \subsection{LONG Token}
 
 The LONG token represents the long position of the option holder,
-entitled to purchase the underlying collateral asset when the option by exercising. 
+entitled to purchase the underlying collateral asset when exercising the option. 
 Simply put, the LONG token is the so-called "Option" in the traditional options world.
 
 The LONG token can only be exercised before expiration. After expiration, the LONG token 
-is unusable deemed worthless. We leave room to burn expired tokens so they aren't used for scams. 
+is unusable and deemed worthless. We leave room to burn expired tokens so they aren't used for scams. 
 
 The LONG token can be traded on DEXs/AMMs and traded on RFQs. 
 They can also be used for OTC trades between private parties.
@@ -120,11 +132,11 @@ The \textbf{lock} and \textbf{unlock} functions are also available to prevent an
 \hline
 \textbf{Function} & \textbf{Description} \\
 \hline
-mint(amount)  & Mints LONG and SHORT tokens by depositing collateral. \\
+mint()  & Mints LONG and SHORT tokens by depositing collateral. \\
 \hline
-exercise(amount) & Exercises the option by swapping consideration for collateral. \\
+exercise() & Exercises the option by swapping consideration for collateral. \\
 \hline
-redeem(amount) & Redeems collateral before expiration if also holding LONG. \\
+redeem() & Redeems collateral before expiration if also holding LONG. \\
 \hline
 lock()/unlock() & Locks/unlocks to prevent/allow exercise. \\
 \hline
@@ -148,24 +160,24 @@ which is similar to a Put option but they are not the same.
 
 
 
-The SHORT token also represents an long position in the underlying Collateral asset by locking up the underlying collateral asset in the SHORT token.
+The SHORT token also represents a long position in the underlying Collateral asset by locking up the underlying collateral asset in the SHORT token.
 This token structure not only represents a covered call, but is the only way to provide the ability to exercise the protocol.
 This is the first step to providing a fully collateralized protocol.
 The SHORT token is also able to redeem the underlying collateral asset after expiration.
 
 The SHORT token provides an ability to redeem the underlying collateral asset after expiration.
 Additionally, prior to expiration, the SHORT token provides the ability to redeem the consideration asset after LONG holders exercise.
-And finally, if a SHORT holder also owns the LONG token, they can redeem the collateral prior to expiration (this is Gamma neutral).
+And finally, if a SHORT holder also owns the LONG token, they can redeem the collateral prior to expiration (this is gamma neutral).
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|p{3cm}|p{4cm}|}
+\begin{tabular}{|p{4cm}|p{4cm}|}
 \hline
 \textbf{Function} & \textbf{Description} \\
 \hline
-redeem(amount) & Redeems collateral after expiration. \\
+redeem() & Redeems collateral after expiration. \\
 \hline
-redeem(amount) & Redeems consideration if available. \\
+redeemConsideration() & Redeems consideration if available. \\ 
 \hline
 \end{tabular}
 \caption{Available functions for SHORT token}
@@ -177,14 +189,14 @@ redeem(amount) & Redeems consideration if available. \\
 
 At this point, one may wonder about the capital efficiency (CE) of the protocol. 
 This requires a couple of additional pieces to be added outside of the protocol.
-One requirement for CE is for for the SHORT token to be used as collateral for loans for the underlying asset.
+One requirement for CE is for the SHORT token to be used as collateral for loans for the underlying asset.
 Lending protocols are willing to lend against an asset if a few conditions are met. 
 The two that are not very clear in this protocol are:
 \begin{itemize}
   \setlength{\itemsep}{0pt}
   \setlength{\parskip}{0pt}
-  \item The asset has a market i.e. is liquid
-  \item The asset has a price feed i.e. an oracle
+  \item The asset has a market, i.e., is liquid
+  \item The asset has a price feed, i.e., an oracle
 \end{itemize}
 
 
@@ -197,7 +209,7 @@ Firstly, liquidity is a necessity so that the lending protocol can sell the asse
 Secondly, a price feed is necessary to determine if the loan is at risk of being called.
 
 If the lending protocol restricts the loan to provide only the underlying collateral or the consideration asset,
-the lenders has two regimes of the price of the Collateral to consider: 
+the lenders have two regimes of the price of the Collateral to consider: 
 when the price of the collateral is above the strike price, and when the price of the collateral is below the strike price.
 Below Strike (K), SHORT is worth P, the price of the collateral. 
 Above Strike (K), SHORT is worth only K because the consideration has been paid through exercise.
@@ -205,16 +217,16 @@ The chart below shows the price of the SHORT token in those regimes with a Strik
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.5\textwidth]{short_price.png}
-  \caption{Price of the SHORT token in the two regimes}
+  \caption{Price of the SHORT token in the two regimes. The orange solid line shows the realistic price incorporating LONG token value, while the green dot-dashed line shows an extreme fair price for low-volume assets.}
   \label{fig:short_price}
 \end{figure}
 
-The combination of the two regimes are not linear and the price feed needs to provide a version of this non-linearity or the lender needs to account for it.
-More importantly, the more realistic price of the SHORT token incorporates the market price of the LONG token, as seen as the orange curver solid line in the chart above.
-Again, the another consideration for the oracle, but for assets that have low volume, an extreme fair price can be used by really shifting the LONG token price component as seen by the green dot dashed line in the chart above.
+The combination of the two regimes is not linear and the price feed needs to provide a version of this non-linearity or the lender needs to account for it.
+More importantly, the more realistic price of the SHORT token incorporates the market price of the LONG token, as seen as the orange curve solid line in the chart above.
+Again, another consideration for the oracle, but for assets that have low volume, an extreme fair price can be used by really shifting the LONG token price component as seen by the green dot-dashed line in the chart above.
 
 \paragraph*{Margin Call Mechanics}
-If the lender needs to margin call against the SHORT token, there are two options: 1. The Lender can buy the coupled LONG token, redeem the resulting collateral and either swap it or use it to pay back the loan. 2. If there's a liquid market for the SHORT token, immediately sell it to cover the loan, with a possiblity of using the proceeds to buy the borrowed collateral.
+If the lender needs to margin call against the SHORT token, there are two options: 1. The Lender can buy the coupled LONG token, redeem the resulting collateral and either swap it or use it to pay back the loan. 2. If there's a liquid market for the SHORT token, immediately sell it to cover the loan, with a possibility of using the proceeds to buy the borrowed collateral.
 
 \section{Fees}
 The protocol reserves the possibility of fees in the future at various places related to the protocol.
@@ -231,7 +243,7 @@ Anything around 1 bip would be considered, with a tapering ($\log(volume)$) to i
 
 \section{Applications and Future Considerations}
 \paragraph*{AMM}
-The protocol tokens can be used in an AMM thus created a market for the options. As well as the short positions if desired. 
+The protocol tokens can be used in an AMM, thus creating a market for the options, as well as the short positions if desired. 
 
 \paragraph*{Default Swaps}
 
@@ -240,7 +252,7 @@ An Oracle or Third party can \textbf{unlock} the LONG token to allow exercise.
 
 \paragraph*{Cash Settlement}
 If stock settlement/exercise feature is not really needed in the space and margin is desired, 
-then the composible nature of the protocol can be used to create a margin protocol throught the mechanics described above. 
+then the composable nature of the protocol can be used to create a margin protocol through the mechanics described above. 
 
 
 \paragraph*{Interoperability across chains}
@@ -256,12 +268,6 @@ A similar use case can be made here to provide option drops instead of token dro
 \paragraph*{Compound Options}
 A compound option is an option on an option. Yes, this is a thing. It's basically a second derivative.
 And yes, this protocol can handle it. 
-
-
-
-
-
-
 
 \paragraph*{Trading}
 
@@ -352,6 +358,15 @@ and providing valuable feedback on the design and implementation.
   collateral
 \end{itemize}
 
+Options need the following abilities to be considered American style:
+\begin{itemize}
+  \setlength{\itemsep}{0pt}
+  \setlength{\parskip}{0pt}
+  \item Expirable at some future fixed date
+  \item Exercisable so that the option holder can swap consideration for underlying collateral prior to expiration
+  \item The option writer can use the collateral freely after expiration, unless...
+  \item The contract written has been exercised, providing consideration to the option writer to be used freely
+\end{itemize}
 
   \section{Example: Minting Options}
 
@@ -373,24 +388,24 @@ and providing valuable feedback on the design and implementation.
       Option Type: Call
     \end{itemize}
   \item
-    Mint Approve the LONG contract to capture your WETH
+    Mint and approve the LONG contract to capture your WETH
   \item
     Receive LONG and SHORT tokens
   \end{enumerate}
   
-\paragraph*{Ignore below}
+% \paragraph*{Ignore below}
 
-Uniswap is a protocol for automated token exchange on Ethereum. 
-It is designed around ease-of-use, gas efficiency, censorship resistance, and zero rent extraction. 
-It is useful for traders and functions particularily well as a component of other smart contracts which require guaranteed on-chain liquidity.
+% Uniswap is a protocol for automated token exchange on Ethereum. 
+% It is designed around ease-of-use, gas efficiency, censorship resistance, and zero rent extraction. 
+% It is useful for traders and functions particularily well as a component of other smart contracts which require guaranteed on-chain liquidity.
 
-Most exchanges maintain an order book and facilitate matches between buyers and sellers. 
-Uniswap smart contracts hold liquidity reserves of various tokens, 
-and trades are executed directly against these reserves. 
-Prices are set automatically using the constant product (x*y=k) market maker mechanism, which keeps overall reserves in relative equilibrium. 
-Reserves are pooled between a network of liquidity providers who supply the system with tokens in exchange for a proportional share of transaction fees.
+% Most exchanges maintain an order book and facilitate matches between buyers and sellers. 
+% Uniswap smart contracts hold liquidity reserves of various tokens, 
+% and trades are executed directly against these reserves. 
+% Prices are set automatically using the constant product (x*y=k) market maker mechanism, which keeps overall reserves in relative equilibrium. 
+% Reserves are pooled between a network of liquidity providers who supply the system with tokens in exchange for a proportional share of transaction fees.
 
-An important feature of Uniswap is the utilization of a factory/registry contract that deploys a separate exchange contract for each ERC20 token. These exchange contracts each hold a reserve of ETH and their associated ERC20. This allows trades between the two based on relative supply. Exchange contracts are linked through the registry, allowing for direct ERC20 to ERC20 trades between any tokens using ETH as an itermediary.
+% An important feature of Uniswap is the utilization of a factory/registry contract that deploys a separate exchange contract for each ERC20 token. These exchange contracts each hold a reserve of ETH and their associated ERC20. This allows trades between the two based on relative supply. Exchange contracts are linked through the registry, allowing for direct ERC20 to ERC20 trades between any tokens using ETH as an itermediary.
 
-This document outlines the core mechanics and technical details for Uniswap. Some code is simplified for readability. Safety features such as overflow checks and purchase minimums are ommited. The full source code is availible on GitHub.
+% This document outlines the core mechanics and technical details for Uniswap. Some code is simplified for readability. Safety features such as overflow checks and purchase minimums are ommited. The full source code is availible on GitHub.
 
