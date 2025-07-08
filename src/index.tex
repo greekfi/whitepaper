@@ -1,10 +1,9 @@
-\title{\greekfi: Decentralized American-Style Options Protocol}
+\title{\greekfi - Decentralized American-Style Options Protocol}
 
 \author{Mahmoud Lababidi}
 \email{ml@greek.fi}
 \affiliation{%
-\greekfi Protocol\\
-Decentralized Options Protocol
+\greekfi 
 }
 
 \date{June 26, 2025}
@@ -59,6 +58,7 @@ This protocol will unlock a trove of possibilities to DeFi, for example:
   \item Create unique underlying swap pairs beyond USD bases
   \item Transfer options from within ecosystems to other ecosystems
   \item Trade options in both OTC and other markets
+  \item Cash Settlement through flash-loans
 \end{itemize}
 
 \section{\label{sec:protocol}Protocol Overview}
@@ -228,7 +228,7 @@ Again, another consideration for the oracle, but for assets that have low volume
 \paragraph*{Margin Call Mechanics}
 If the lender needs to margin call against the SHORT token, there are two options: 1. The Lender can buy the coupled LONG token, redeem the resulting collateral and either swap it or use it to pay back the loan. 2. If there's a liquid market for the SHORT token, immediately sell it to cover the loan, with a possibility of using the proceeds to buy the borrowed collateral.
 
-\section{Fees}
+\subsection{Fees}
 The protocol reserves the possibility of fees in the future at various places related to the protocol.
 Anything around 1 bip would be considered, with a tapering ($\log(volume)$) to incentivize large volumes.
 \begin{itemize}
@@ -326,6 +326,14 @@ loan on the collateral (AAVE, Silo, etc) and uses the proceeds to mint
 more options. This allows for the vault to mint more options than it
 would have been able to otherwise. This is also extremely risky as the 
 vault is exposed to the risk of the collateral asset price.
+
+\paragraph*{Cash Settled Options} 
+
+Using cash-equivelent from a flash loan, 
+a contract can be exercised for collateral which 
+in turn is swapped for the original cash equivelent.
+This whole process can be wrapped in a separate contract
+and triggered by an external party near expiration time.
 
 \section{\label{sec:appendix}Appendix}
 
