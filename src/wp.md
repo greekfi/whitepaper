@@ -1,11 +1,11 @@
 ---
 abstract: |
-  Greek.fi is a protocol that enables decentralized American-style
-  exercise options that are fully collateralized without requiring
-  oracles or margin. It is designed for composability, exercisability,
-  and universal use on any EVM-compatible chain and allows any ERC20
-  token to be used as collateral and consideration, including WBTC,
-  WETH, stETH, USDC, and USDT.
+  is a protocol that enables decentralized American-style exercise
+  options that are fully collateralized without requiring oracles or
+  margin. It is designed for composability, exercisability, and
+  universal use on any EVM-compatible chain and allows any ERC20 token
+  to be used as collateral and consideration, including WBTC, WETH,
+  stETH, USDC, and USDT.
 
   Similar to yield generating tokens, the protocol generates two ERC20
   tokens: a redemption token (which provides capital efficiency) and an
@@ -16,10 +16,10 @@ abstract: |
 author:
 - Mahmoud Lababidi
 date: June 26, 2025
-title: Greek.fi - Decentralized American-Style Options Protocol
+title: "- Decentralized American-Style Options Protocol"
 ---
 
-# Introduction
+# []{#sec:introduction label="sec:introduction"}Introduction
 
 ## Background
 
@@ -38,10 +38,10 @@ become as commonplace in the DeFi ecosystem as yield generating tokens.
 Early exercise is an added benefit in options because it gives
 in-the-money holders an incentive to exercise early.
 
-To solve this, we introduce the Greek.fi protocol, the first fully
-decentralized, collateralized, tokenized, exercisable, expirable options
-protocol in the Ethereum ecosystem. The protocol achieves the following,
-which fulfill the requirements for an American options:
+To solve this, we introduce the protocol, the first fully decentralized,
+collateralized, tokenized, exercisable, expirable options protocol in
+the Ethereum ecosystem. The protocol achieves the following, which
+fulfill the requirements for an American options:
 
 - Fully ERC20 compatible - allowing full composability
 
@@ -83,11 +83,11 @@ This protocol will unlock a trove of possibilities to DeFi, for example:
 
 # []{#sec:protocol label="sec:protocol"}Protocol Overview
 
-The Greek.fi protocol uses a contract factory, allowing upgradability,
-which creates a new pair (SHORT and LONG) of ERC20 contracts/tokens for
-each option type created (i.e. WETH/USDC, WBTC/USDC). The pair token
-creation provides ERC20 composability in SHORT and LONG, a necessity in
-the adoption of options as tokens. The pair provides a minting interface
+The protocol uses a contract factory, allowing upgradability, which
+creates a new pair (SHORT and LONG) of ERC20 contracts/tokens for each
+option type created (i.e. WETH/USDC, WBTC/USDC). The pair token creation
+provides ERC20 composability in SHORT and LONG, a necessity in the
+adoption of options as tokens. The pair provides a minting interface
 where depositing collateral tokens returns SHORT and LONG tokens. Each
 option pair is represented by a tuple of the following parameters:
 $$(Collateral, Consideration, Strike, Expiration, isPut).$$
