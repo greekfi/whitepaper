@@ -81,7 +81,7 @@ This protocol will unlock a trove of possibilities to DeFi, for example:
 
 - Cash Settlement through flash-loans
 
-# []{#sec:protocol label="sec:protocol"}Protocol Overview
+# Protocol Overview
 
 The Greek.fi protocol uses a contract factory, allowing upgradability,
 which creates a new pair (SHORT and LONG) of ERC20 contracts/tokens for
@@ -386,7 +386,7 @@ collateral which in turn is swapped for the original cash equivelent.
 This whole process can be wrapped in a separate contract and triggered
 by an external party near expiration time.
 
-# []{#sec:appendix label="sec:appendix"}Appendix
+# Appendix
 
 ::: acknowledgments
 We wish to acknowledge the support of the DeFi community in developing
