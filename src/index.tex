@@ -49,8 +49,8 @@
 
 \title{\greekfi - Decentralized American-Style Options Protocol}
 
-\author{Mahmoud Lababidi}
-\email{ml@greek.fi}
+\author{Greek Fi and Gigahertz Fi}
+\email{greek@greek.fi}
 \affiliation{%
 \greekfi 
 }
@@ -384,72 +384,9 @@ in turn is swapped for the original cash equivelent.
 This whole process can be wrapped in a separate contract
 and triggered by an external party near expiration time.
 
-\section{\label{sec:appendix}Appendix}
-
-
-\begin{acknowledgments}
-We wish to acknowledge the support of the DeFi community in developing
-the Greek.fi Protocol, offering suggestions and encouragement, testing new versions,
-and providing valuable feedback on the design and implementation.
-\end{acknowledgments}
-
-\appendix
-
-\subsection{Key Concepts}
-
-\begin{itemize}
-\item
-  \textbf{Call Option}: Right to buy an asset at a specified price
-  before expiration
-\item
-  \textbf{Put Option}: Right to sell an asset at a specified price
-  before expiration
-\item
-  \textbf{Strike Price}: The price at which the option can be exercised
-\item
-  \textbf{Expiration Date}: The last date the option can be exercised
-\item
-  \textbf{LONG Token}: Represents the right to exercise the option
-\item
-  \textbf{SHORT Token}: Represents the obligation and right to the
-  collateral
-\end{itemize}
-
-Options need the following abilities to be considered American style:
-\begin{itemize}
-  \setlength{\itemsep}{0pt}
-  \setlength{\parskip}{0pt}
-  \item Expirable at some future fixed date
-  \item Exercisable so that the option holder can swap consideration for underlying collateral prior to expiration
-  \item The option writer can use the collateral freely after expiration, unless...
-  \item The contract written has been exercised, providing consideration to the option writer to be used freely
-\end{itemize}
-
-  \section{Example: Minting Options}
-
-  \begin{enumerate}
-  \item
-    Connect your wallet to the protocol
-  \item
-    Select option parameters:
-    \begin{itemize}
-    \item
-      Collateral Asset: WETH
-    \item
-      Consideration Asset: USDC
-    \item
-      Strike Price: 5000 USDC
-    \item
-      Expiration Date: 30 days
-    \item
-      Option Type: Call
-    \end{itemize}
-  \item
-    Mint and approve the LONG contract to capture your WETH
-  \item
-    Receive LONG and SHORT tokens
-  \end{enumerate}
-  
+\section{Conclusion}
+We have introduced a fundamentally new addition to the decentralized
+finance capabilities. 
 % \paragraph*{Ignore below}
 
 % Uniswap is a protocol for automated token exchange on Ethereum. 
